@@ -108,11 +108,25 @@ class CanvasComponent extends React.Component {
 				});
 			}
 
+
 			if (this.state.drawing) {
+				const tempLine = new Line(new Point(this.state.temp.beginPoint.x, this.state.temp.beginPoint.y), new Point(this.state.temp.endPoint.x, this.state.temp.endPoint.y));
+
 				ctx.beginPath();
-				ctx.moveTo(this.state.temp.beginPoint.x, this.state.temp.beginPoint.y);
-				ctx.lineTo(this.state.temp.endPoint.x, this.state.temp.endPoint.y);
+				ctx.moveTo(tempLine.begin.x, tempLine.begin.y);
+				ctx.lineTo(tempLine.end.x, tempLine.end.y);
 				ctx.stroke();
+
+				this.state.lines.forEach((line) => {
+					const result = tempLine.cross(line);
+					if (Point.isPoint(result)) {
+						ctx.beginPath();
+						ctx.fillStyle = "#FA3B1D";
+						ctx.arc(result.x, result.y, 15, 0, 2 * Math.PI);
+						ctx.fill();
+						ctx.stroke();
+					}
+				});
 			}
 		
 		}, 1000 / 60);
