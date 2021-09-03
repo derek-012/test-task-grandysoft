@@ -6,6 +6,10 @@ class Line {
 		this.end = end;
 	}
 
+	setEndPoint(point) {
+		this.end = point;
+	}
+
 	cross(line) {
 		return Collision.getCollision(this, line);
 	} 

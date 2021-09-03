@@ -10,6 +10,7 @@ class CanvasComponent extends React.Component {
 		this.handleClick = this.handleClick.bind(this);
 		this.mouseMove = this.mouseMove.bind(this);
 		this.contextMenu = this.contextMenu.bind(this);
+		this.handleCollapse = this.handleCollapse.bind(this);
 		
 		this.state = {
 			lines: [],
@@ -93,7 +94,7 @@ class CanvasComponent extends React.Component {
 			if (this.state.lines) {
 				this.state.lines.forEach((line) => {
 					line.draw(ctx);
-				})
+				});
 			}
 
 			if (this.state.collisions) {
@@ -101,7 +102,6 @@ class CanvasComponent extends React.Component {
 					collision.draw(ctx);
 				});
 			}
-
 
 			if (this.state.drawing) {
 				const tempLine = new Line(new Point(this.state.temp.beginPoint.x, this.state.temp.beginPoint.y), new Point(this.state.temp.endPoint.x, this.state.temp.endPoint.y));
@@ -119,8 +119,19 @@ class CanvasComponent extends React.Component {
 		}, 1000 / 60);
 	}
 
+	componentWillUnmount() {
+
+	}
+
+	handleCollapse(e) {
+		console.log("COLLAPSE!!!");
+	}
+
 	render() {
-		return <canvas className="canvas" ref={this.setLineCanvasRef} onClick={this.handleClick} onMouseMove={this.mouseMove} onContextMenu={this.contextMenu} width={this.props.width} height={this.props.height}/>;
+		return <div className="wrap-canvas">
+				<canvas className="canvas" ref={this.setLineCanvasRef} onClick={this.handleClick} onMouseMove={this.mouseMove} onContextMenu={this.contextMenu} width={this.props.width} height={this.props.height}/>
+				<button className="button" onClick={this.handleCollapse}>collapse lines</button>
+			</div>;
 	}
 }
 

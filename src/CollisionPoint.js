@@ -1,5 +1,3 @@
-import Point from "./Point.js";
-
 class CollisionPoint {
 	constructor(point) {
 		this.point = point;
