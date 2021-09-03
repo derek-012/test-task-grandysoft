@@ -1,4 +1,5 @@
 import Point from "./Point.js";
+import CollisionPoint from "./CollisionPoint.js";
 
 class Collision {
 	static getCollision(line1, line2) {
@@ -26,7 +27,7 @@ class Collision {
    		if (Math.abs(numera) < EPS && Math.abs(numerb) < EPS && Math.abs(denom) < EPS) {
       		x = (x1 + x2) / 2;
       		y = (y1 + y2) / 2; 
-      		return new Point(x, y);
+      		return new CollisionPoint(new Point(x, y));
    		}
 
    		if (Math.abs(denom) < EPS) {
@@ -42,7 +43,7 @@ class Collision {
 
    		x = x1 + mua * (x2 - x1);
    		y = y1 + mua * (y2 - y1);
-   		return new Point(x, y); 
+   		return new CollisionPoint(new Point(x, y)); 
 
   		// let n;
     // 	if (y2 - y1 !== 0) {  // a(y)

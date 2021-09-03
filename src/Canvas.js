@@ -1,6 +1,7 @@
 import React from "react";
 import Point from "./Point.js";
 import Line from "./Line.js";
+import CollisionPoint from "./CollisionPoint.js";
 
 class CanvasComponent extends React.Component {
 
@@ -47,7 +48,7 @@ class CanvasComponent extends React.Component {
 			if (this.state.lines.length > 0) {
 				this.state.lines.forEach((l) => {
 					let result = line.cross(l);
-					if (Point.isPoint(result))
+					if (CollisionPoint.isCollisionPoint(result))
 						collisions.push(result);
 				});
 			}
@@ -91,20 +92,13 @@ class CanvasComponent extends React.Component {
 			ctx.clearRect(0, 0, this.props.width, this.props.height);
 			if (this.state.lines) {
 				this.state.lines.forEach((line) => {
-					ctx.beginPath();
-					ctx.moveTo(line.begin.x, line.begin.y);
-					ctx.lineTo(line.end.x, line.end.y);
-					ctx.stroke();
+					line.draw(ctx);
 				})
 			}
 
 			if (this.state.collisions) {
 				this.state.collisions.forEach((collision) => {
-					ctx.beginPath();
-					ctx.fillStyle = "#FA3B1D";
-					ctx.arc(collision.x, collision.y, 15, 0, 2 * Math.PI);
-					ctx.fill();
-					ctx.stroke();
+					collision.draw(ctx);
 				});
 			}
 
@@ -112,19 +106,12 @@ class CanvasComponent extends React.Component {
 			if (this.state.drawing) {
 				const tempLine = new Line(new Point(this.state.temp.beginPoint.x, this.state.temp.beginPoint.y), new Point(this.state.temp.endPoint.x, this.state.temp.endPoint.y));
 
-				ctx.beginPath();
-				ctx.moveTo(tempLine.begin.x, tempLine.begin.y);
-				ctx.lineTo(tempLine.end.x, tempLine.end.y);
-				ctx.stroke();
+				tempLine.draw(ctx);
 
 				this.state.lines.forEach((line) => {
 					const result = tempLine.cross(line);
-					if (Point.isPoint(result)) {
-						ctx.beginPath();
-						ctx.fillStyle = "#FA3B1D";
-						ctx.arc(result.x, result.y, 15, 0, 2 * Math.PI);
-						ctx.fill();
-						ctx.stroke();
+					if (CollisionPoint.isCollisionPoint(result)) {
+						result.draw(ctx);
 					}
 				});
 			}
