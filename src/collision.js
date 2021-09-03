@@ -3,7 +3,10 @@ import CollisionPoint from "./CollisionPoint.js";
 
 class Collision {
 	static getCollision(line1, line2) {
-		 const EPS = 0.000001;
+		const EPS = 0.000001;
+
+		if (line1.compare(line2))
+			return false;
 
 		const x1 = line1.begin.x;
 		const y1 = line1.begin.y;
@@ -44,25 +47,6 @@ class Collision {
    		x = x1 + mua * (x2 - x1);
    		y = y1 + mua * (y2 - y1);
    		return new CollisionPoint(new Point(x, y)); 
-
-  		// let n;
-    // 	if (y2 - y1 !== 0) {  // a(y)
-    //     	let q = (x2 - x1) / (y1 - y2);   
-    //     	let sn = (x3 - x4) + (y3 - y4) * q; 
-    //     	if (!sn) {
-    //     		return false;
-    //     	}  // c(x) + c(y)*q
-    //     	let fn = (x3 - x1) + (y3 - y1) * q;   // b(x) + b(y)*q
-    //     	n = fn / sn;
-    // 	} else {
-    //     	if (!(y3 - y4)) {
-    //     		return false;
-    //     	}  // b(y)
-    //     	n = (y3 - y1) / (y3 - y4);   // c(y)/b(y)
-    // 	}
-    // 	x = x3 + (x4 - x3) * n;  // x3 + (-b(x))*n
-    // 	y = y3 + (y4 - y3) * n;  // y3 +(-b(y))*n
-    // 	return new Point(x, y);
 	}
 }
 

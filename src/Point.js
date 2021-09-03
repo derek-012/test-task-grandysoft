@@ -11,6 +11,10 @@ class Point {
 	static isPoint(point) {
 		return point instanceof Point;
 	}
+
+	compare(point) {
+		return point.x === this.x && point.y === this.y;
+	}
 }
 
 export default Point;

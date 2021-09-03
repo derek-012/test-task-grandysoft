@@ -19,7 +19,8 @@ class CanvasComponent extends React.Component {
 				beginPoint: new Point(),
 				endPoint: new Point(),
 			},
-			drawing: false
+			drawing: false,
+			collapse: false
 		}
 
 		this.lineCanvas = null;
@@ -30,6 +31,8 @@ class CanvasComponent extends React.Component {
 	}
 
 	handleClick(e) {
+		if (this.state.collapse)
+			return;
 		if (!this.state.drawing) {
 			const point = Point.createPointFromEvent(e);
 			this.setState({
@@ -93,14 +96,22 @@ class CanvasComponent extends React.Component {
 			ctx.clearRect(0, 0, this.props.width, this.props.height);
 			if (this.state.lines) {
 				this.state.lines.forEach((line) => {
+					if (this.state.collapse)
+						line.scale(100 / 3000);
 					line.draw(ctx);
 				});
 			}
 
-			if (this.state.collisions) {
-				this.state.collisions.forEach((collision) => {
-					collision.draw(ctx);
-				});
+
+			if (this.state.lines.length > 1) {
+				const lines = this.state.lines;
+				for (let i = 1; i < lines.length; i++) {
+					for (let j = 0; j < i; j++) {
+						let result = lines[i].cross(lines[j]);
+						if (CollisionPoint.isCollisionPoint(result))
+							result.draw(ctx);
+					}
+				}
 			}
 
 			if (this.state.drawing) {
@@ -124,7 +135,22 @@ class CanvasComponent extends React.Component {
 	}
 
 	handleCollapse(e) {
-		console.log("COLLAPSE!!!");
+		if (this.state.lines.length > 0) {
+			this.setState({collapse: true});
+			setTimeout(() => {
+				this.setState({
+					lines: [],
+					collisions: [],
+					temp: {
+						beginPoint: new Point(),
+						endPoint: new Point()
+					},
+					drawing: false,
+					collapse: false
+				})
+			}, 3000);
+		}
+		
 	}
 
 	render() {
