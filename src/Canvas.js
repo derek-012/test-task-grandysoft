@@ -1,5 +1,6 @@
 import React from "react";
-////import Collision from "./collision.js";
+import Point from "./Point.js";
+import Line from "./Line.js";
 
 class CanvasComponent extends React.Component {
 
@@ -11,14 +12,13 @@ class CanvasComponent extends React.Component {
 		
 		this.state = {
 			lines: [],
+			collisions: [],
 			temp: {
-				beginPoint: { x: -1, y: -1 },
-				endPoint: { x: -1, y: -1 },
+				beginPoint: new Point(),
+				endPoint: new Point(),
 			},
 			drawing: false
 		}
-
-		console.log(this);
 
 		this.lineCanvas = null;
 
@@ -27,21 +27,9 @@ class CanvasComponent extends React.Component {
 		}
 	}
 
-	getPoint(e) {
-		return { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
-	}
-
-	createLine(begin, end) {
-		return {
-			begin: begin,
-			end: end
-		};
-	}
-
 	handleClick(e) {
-
 		if (!this.state.drawing) {
-			const point = this.getPoint(e);
+			const point = Point.createPointFromEvent(e);
 			this.setState({
 				temp: {
 					beginPoint: point,
@@ -51,34 +39,26 @@ class CanvasComponent extends React.Component {
 			});
 
 		} else {
-			// const endPoint = {
-			// 	x: e.nativeEvent.offsetX,
-			// 	y: e.nativeEvent.offsetY
-			// };
+			const endPoint = Point.createPointFromEvent(e);
 
-			
+			const line = new Line(this.state.temp.beginPoint, endPoint);
 
-			// const line = {
-			// 	begin: this.state.temp.beginPoint,
-			// 	end: endPoint
-			// };
-
-			const endPoint = this.getPoint(e);
-
-			const line = this.createLine(this.state.temp.beginPoint, endPoint);
+			let collisions = [];
+			if (this.state.lines.length > 0) {
+				this.state.lines.forEach((l) => {
+					let result = line.cross(l);
+					if (Point.isPoint(result))
+						collisions.push(result);
+				});
+			}
 
 			this.setState((state) => {
 				return {
 					lines: [...state.lines, line],
+					collisions: [...state.collisions, ...collisions],
 					temp: {
-						beginPoint: {
-							x: -1,
-							y: -1
-						},
-						endPoint: {
-							x: -1,
-							y: -1
-						}
+						beginPoint: new Point(),
+						endPoint: new Point()
 					},
 					drawing: false
 				}
@@ -97,17 +77,12 @@ class CanvasComponent extends React.Component {
 				return {
 					temp: {
 						beginPoint: state.temp.beginPoint,
-						endPoint: this.getPoint(e),
+						endPoint: Point.createPointFromEvent(e),
 						drawing: state.temp.drawing
 					}
 				};
 			})
 		}
-	}
-
-	updateCanvas() {
-		//this.context.clearRect(0, 0, this.props.width, this.props.height);
-		
 	}
 
 	componentDidMount() {
@@ -123,6 +98,16 @@ class CanvasComponent extends React.Component {
 				})
 			}
 
+			if (this.state.collisions) {
+				this.state.collisions.forEach((collision) => {
+					ctx.beginPath();
+					ctx.fillStyle = "#FA3B1D";
+					ctx.arc(collision.x, collision.y, 15, 0, 2 * Math.PI);
+					ctx.fill();
+					ctx.stroke();
+				});
+			}
+
 			if (this.state.drawing) {
 				ctx.beginPath();
 				ctx.moveTo(this.state.temp.beginPoint.x, this.state.temp.beginPoint.y);
@@ -133,44 +118,9 @@ class CanvasComponent extends React.Component {
 		}, 1000 / 60);
 	}
 
-	getCollision(line1, line2) {
-
-	}
-
 	render() {
-		//console.log(this.state);
 		return <canvas className="canvas" ref={this.setLineCanvasRef} onClick={this.handleClick} onMouseMove={this.mouseMove} onContextMenu={this.contextMenu} width={this.props.width} height={this.props.height}/>;
 	}
 }
-
-// export default CanvasComponent;
-
-// class CanvasComponent extends React.Component {
-// 	constructor() {
-// 		super();
-// 		this.canvas = null;
-// 		this.getCanvas = (el) => {
-// 			this.canvas = el;
-// 		}
-// 	}
-
-//     componentDidMount() {
-//         this.updateCanvas();
-//     }
-//     updateCanvas() {
-//         const ctx = this.canvas.getContext('2d');
-//         ctx.fillRect(0,0, 100, 100);
-//         ctx.beginPath();
-// 		ctx.moveTo(5, 5);
-// 		ctx.lineTo(34, 234);
-// 		ctx.stroke();
-//     }
-//     render() {
-//         return (
-//             <canvas ref={this.getCanvas} width={300} height={300}/>
-//         );
-//     }
-// }
-//ReactDOM.render(<CanvasComponent/>, document.getElementById('container'));
 
 export default CanvasComponent;

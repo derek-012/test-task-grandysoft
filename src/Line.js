@@ -1,4 +1,4 @@
-//import Collision from "./collision.js";
+import Collision from "./collision.js";
 
 class Line {
 	constructor(begin, end) {
@@ -6,7 +6,9 @@ class Line {
 		this.end = end;
 	}
 
-	// cross(line) {
-	// 	Collision.getCollision(this, line);
-	// } 
+	cross(line) {
+		return Collision.getCollision(this, line);
+	} 
 }
+
+export default Line;

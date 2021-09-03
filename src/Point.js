@@ -1,10 +1,5 @@
 class Point {
-	constructor() {
-		this.x = -1;
-		this.y = -1;
-	}
-	
-	constructor(x, y) {
+	constructor(x = -1, y = -1) {
 		this.x = x;
 		this.y = y;
 	}
@@ -12,4 +7,10 @@ class Point {
 	static createPointFromEvent(event) {
 		return new Point(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
 	}
+
+	static isPoint(point) {
+		return point instanceof Point;
+	}
 }
+
+export default Point;
