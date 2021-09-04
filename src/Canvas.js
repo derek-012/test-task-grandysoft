@@ -3,6 +3,9 @@ import Point from "./Point.js";
 import Line from "./Line.js";
 import CollisionPoint from "./CollisionPoint.js";
 
+const FPS = 1000 / 60;
+const SCALE = 1 / (60 * 3);
+
 class CanvasComponent extends React.Component {
 
 	constructor(props) {
@@ -14,7 +17,6 @@ class CanvasComponent extends React.Component {
 		
 		this.state = {
 			lines: [],
-			collisions: [],
 			temp: {
 				beginPoint: new Point(),
 				endPoint: new Point(),
@@ -28,6 +30,8 @@ class CanvasComponent extends React.Component {
 		this.setLineCanvasRef = (canvas) => {
 			this.lineCanvas = canvas;
 		}
+
+		this.timerId = null;
 	}
 
 	handleClick(e) {
@@ -48,19 +52,9 @@ class CanvasComponent extends React.Component {
 
 			const line = new Line(this.state.temp.beginPoint, endPoint);
 
-			let collisions = [];
-			if (this.state.lines.length > 0) {
-				this.state.lines.forEach((l) => {
-					let result = line.cross(l);
-					if (CollisionPoint.isCollisionPoint(result))
-						collisions.push(result);
-				});
-			}
-
 			this.setState((state) => {
 				return {
 					lines: [...state.lines, line],
-					collisions: [...state.collisions, ...collisions],
 					temp: {
 						beginPoint: new Point(),
 						endPoint: new Point()
@@ -96,8 +90,9 @@ class CanvasComponent extends React.Component {
 			ctx.clearRect(0, 0, this.props.width, this.props.height);
 			if (this.state.lines) {
 				this.state.lines.forEach((line) => {
-					if (this.state.collapse)
-						line.scale(100 / 3000);
+					if (this.state.collapse){
+						line.scale();
+					}
 					line.draw(ctx);
 				});
 			}
@@ -127,20 +122,22 @@ class CanvasComponent extends React.Component {
 				});
 			}
 		
-		}, 1000 / 60);
+		}, FPS);
 	}
 
 	componentWillUnmount() {
-
+		clearInterval(this.timerId);
 	}
 
 	handleCollapse(e) {
 		if (this.state.lines.length > 0) {
-			this.setState({collapse: true});
+			this.state.lines.forEach((l) => l.setScale(SCALE));
+			this.setState({
+				collapse: true
+			});
 			setTimeout(() => {
 				this.setState({
 					lines: [],
-					collisions: [],
 					temp: {
 						beginPoint: new Point(),
 						endPoint: new Point()

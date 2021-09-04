@@ -1,4 +1,5 @@
 import CanvasComponent from "./Canvas.js";
+import "./style.css";
 
 function App() {
 
