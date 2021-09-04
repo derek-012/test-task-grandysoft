@@ -5,11 +5,14 @@ import CollisionPoint from "./CollisionPoint.js";
 
 const FPS = 1000 / 60;
 const SCALE = 1 / (60 * 3);
+const COLLAPETIME = 3000;
 
 class CanvasComponent extends React.Component {
 
 	constructor(props) {
 		super(props);
+
+		// Инициализация обработчиков действий
 		this.handleClick = this.handleClick.bind(this);
 		this.mouseMove = this.mouseMove.bind(this);
 		this.contextMenu = this.contextMenu.bind(this);
@@ -25,6 +28,8 @@ class CanvasComponent extends React.Component {
 			collapse: false
 		}
 
+
+		// Получения объекта canvas
 		this.lineCanvas = null;
 
 		this.setLineCanvasRef = (canvas) => {
@@ -35,9 +40,13 @@ class CanvasComponent extends React.Component {
 	}
 
 	handleClick(e) {
+		// Пока происходит удаление линий рисование не допускается
 		if (this.state.collapse)
 			return;
+
+		// Проверка на рисование
 		if (!this.state.drawing) {
+			// Сохранение начальной точки линии
 			const point = Point.createPointFromEvent(e);
 			this.setState({
 				temp: {
@@ -48,6 +57,7 @@ class CanvasComponent extends React.Component {
 			});
 
 		} else {
+			// Сохранение конечной точки линии по второму нажатию левой кнопки мыши
 			const endPoint = Point.createPointFromEvent(e);
 
 			const line = new Line(this.state.temp.beginPoint, endPoint);
@@ -66,11 +76,13 @@ class CanvasComponent extends React.Component {
 	}
 
 	contextMenu(e) {
+		// Отмена рисования при нажатии правой кнопки мыши
 		if (this.state.drawing)
 			this.setState({drawing: false});
 	}
 
 	mouseMove(e) {
+		// Обновление предполагаемой линии при перемещении курсора мыши
 		if (this.state.drawing) {
 			this.setState((state) => {
 				return {
@@ -86,10 +98,13 @@ class CanvasComponent extends React.Component {
 
 	componentDidMount() {
 		const ctx = this.lineCanvas.getContext('2d');
+
 		this.timerId = setInterval(() => {
+			// Отрисовка линий
 			ctx.clearRect(0, 0, this.props.width, this.props.height);
 			if (this.state.lines) {
 				this.state.lines.forEach((line) => {
+					// Если была нажата копка "Collapse lines", линии уменьшаются за каждый кадр до момента удалению
 					if (this.state.collapse){
 						line.scale();
 					}
@@ -98,6 +113,7 @@ class CanvasComponent extends React.Component {
 			}
 
 
+			// Отрисовка пересечений линий
 			if (this.state.lines.length > 1) {
 				const lines = this.state.lines;
 				for (let i = 1; i < lines.length; i++) {
@@ -109,6 +125,7 @@ class CanvasComponent extends React.Component {
 				}
 			}
 
+			// Отрисовка линии, которую пользователь хочет создать, вместе с поиском пересечений для нее
 			if (this.state.drawing) {
 				const tempLine = new Line(new Point(this.state.temp.beginPoint.x, this.state.temp.beginPoint.y), new Point(this.state.temp.endPoint.x, this.state.temp.endPoint.y));
 
@@ -121,7 +138,6 @@ class CanvasComponent extends React.Component {
 					}
 				});
 			}
-		
 		}, FPS);
 	}
 
@@ -130,6 +146,7 @@ class CanvasComponent extends React.Component {
 	}
 
 	handleCollapse(e) {
+		// Инициализация удаления линий
 		if (this.state.lines.length > 0) {
 			this.state.lines.forEach((l) => l.setScale(SCALE));
 			this.setState({
@@ -145,7 +162,7 @@ class CanvasComponent extends React.Component {
 					drawing: false,
 					collapse: false
 				})
-			}, 3000);
+			}, COLLAPETIME);
 		}
 		
 	}

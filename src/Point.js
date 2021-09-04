@@ -32,7 +32,6 @@ class Point {
 		if (this.hasScale) {
 			this.x += this.scaleX;
 			this.y += this.scaleY;
-			console.log(`x = ${this.x}; y = ${this.y}; scaleX = ${this.scaleX}; scaleY = ${this.scaleY}`);
 		}
 	}
 

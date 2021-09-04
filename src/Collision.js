@@ -1,6 +1,8 @@
 import Point from "./Point.js";
 import CollisionPoint from "./CollisionPoint.js";
 
+
+// Класс используется для нахождения пересечения между двумя линиями
 class Collision {
 	static getCollision(line1, line2) {
 		const EPS = 0.000001;
@@ -24,8 +26,6 @@ class Collision {
 		let denom  = (y4-y3) * (x2-x1) - (x4-x3) * (y2-y1);
    		let numera = (x4-x3) * (y1-y3) - (y4-y3) * (x1-x3);
    		let numerb = (x2-x1) * (y1-y3) - (y2-y1) * (x1-x3);
-
-  
 
    		if (Math.abs(numera) < EPS && Math.abs(numerb) < EPS && Math.abs(denom) < EPS) {
       		x = (x1 + x2) / 2;
